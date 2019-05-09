@@ -1,0 +1,4 @@
+graft UVTextureConverter/bin
+graft UVTextureConverter/docks
+graft UVTextureConverter/config
+graft UVTextureConverter/input
