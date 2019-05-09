@@ -1,4 +1,2 @@
-graft UVTextureConverter/bin
-graft UVTextureConverter/docks
 graft UVTextureConverter/config
-graft UVTextureConverter/input
+graft UVTextureConverter/mapping_relations
