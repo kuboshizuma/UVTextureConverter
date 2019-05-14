@@ -1,8 +1,14 @@
-from PIL import Image
-import numpy as np
-im = Image.open("input/normal.jpg")
+# UVTextureConverter
 
-from UVTextureConverter import Normal2Atlas
-normal_tex = np.array(im)
-converter = Normal2Atlas(normal_size=512, atlas_size=200)
-atlas_texture = converter.convert(normal_tex)
+## Install
+
+```
+$ pip install -U git+ssh://git@github.com/kuboshizuma/UVTextureConverter.git@master#egg=UVTextureConverter
+```
+
+## How To Use
+
+See the following notebooks.
+
+- [convert_demo.ipynb](https://github.com/kuboshizuma/UVTextureConverter/blob/master/notebook/convert_demo.ipynb): how to convert from atlas texture to normal texture, and vice versa.
+- [densepose_convert_demo.ipynb](https://github.com/kuboshizuma/UVTextureConverter/blob/master/notebook/densepose_convert_demo.ipynb): how to convert a single rgb image to atlas texute by densepose and convert to atlas texture.
