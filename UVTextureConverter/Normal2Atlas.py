@@ -87,12 +87,13 @@ class Normal2Atlas(UVConverter):
         else:
             return self.atlas_tex
 
-    def concat_atlas_tex(self):
+    @classmethod
+    def concat_atlas_tex(cls, given_tex):
         tex = None
         for i in range(0, 4):
-            tex_tmp = self.atlas_tex[6*i]
+            tex_tmp = given_tex[6*i]
             for i in range(1+6*i, 6+6*i):
-                tex_tmp = np.concatenate((tex_tmp, self.atlas_tex[i]), axis=1)
+                tex_tmp = np.concatenate((tex_tmp, given_tex[i]), axis=1)
             if tex is None:
                 tex = tex_tmp
             else:
