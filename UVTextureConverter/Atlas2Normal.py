@@ -83,7 +83,7 @@ class Atlas2Normal(UVConverter):
         self.normal_tex, self.normal_ex  = self._mapping_atlas_to_normal(atlas_tex)
         if return_exist_area:
             return self.normal_tex, self.normal_ex
-        else
+        else:
             return self.normal_tex
 
     def _mapping_atlas_to_normal(self, atlas_tex):
