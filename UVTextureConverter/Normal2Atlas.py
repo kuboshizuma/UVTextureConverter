@@ -19,8 +19,8 @@ class Normal2Atlas(UVConverter):
         else:
             self.mapping_relation = []
 
-    def convert(self, normal_tex, return_exist_area=False):
-        if self.atlas_tex is None or self.atlas_ex is None: self._mapping(normal_tex)
+    def convert(self, normal_tex, mask=None):
+        if self.atlas_tex is None or self.atlas_ex is None: self._mapping(normal_tex, mask)
         if len(self.mapping_relation)==0:
             for k in tqdm(range(len(self.normal_faces))):
                 face_vertex = self.normal_faces[k] # vertex番号を取得
@@ -77,45 +77,34 @@ class Normal2Atlas(UVConverter):
 
             with open(self.file_path / f'mapping_relations/normal2atlas_{self.normal_size}_{self.atlas_size}.pickle', mode='wb') as f:
                 pickle.dump(self.mapping_relation, f)
+
+        painted_atlas_tex = np.copy(self.atlas_tex)
+        painted_atlas_ex = np.copy(self.atlas_ex)
         for relation in self.mapping_relation:
             new_tex = normal_tex[relation[3], relation[4]]
-            self.atlas_tex[relation[2], relation[0], relation[1]] = new_tex/255
-            self.atlas_ex[relation[2], relation[0], relation[1]] = 1
+            painted_atlas_tex[relation[2], relation[0], relation[1]] = new_tex/255
+            painted_atlas_ex[relation[2], relation[0], relation[1]] = mask[relation[3], relation[4]]
 
+
+        if not mask is None:
+            return painted_atlas_tex, painted_atlas_ex
+        else:
+            return painted_atlas_tex
+
+    def _mapping(self, normal_tex, mask, return_exist_area=False):
+        self.atlas_tex, self.atlas_ex = self._mapping_normal_to_atlas(normal_tex, mask)
         if return_exist_area:
             return self.atlas_tex, self.atlas_ex
         else:
             return self.atlas_tex
 
-    @classmethod
-    def concat_atlas_tex(cls, given_tex):
-        tex = None
-        for i in range(0, 4):
-            tex_tmp = given_tex[6*i]
-            for i in range(1+6*i, 6+6*i):
-                tex_tmp = np.concatenate((tex_tmp, given_tex[i]), axis=1)
-            if tex is None:
-                tex = tex_tmp
-            else:
-                tex = np.concatenate((tex, tex_tmp), axis=0)
-        return tex
-
-    def _mapping(self, normal_tex, return_exist_area=False):
-        self.atlas_tex, self.atlas_ex= self._mapping_normal_to_atlas(normal_tex)
-        if return_exist_area:
-            return self.atlas_tex, self.atlas_ex
-        else:
-            return self.atlas_tex
-
-    def _mapping_to_each_atlas_parts(self, vertex_tex, parts_num):
+    def _mapping_to_each_atlas_parts(self, vertex_tex, vertex_mask, parts_num):
         """
         normal textureをatlas textureの各パーツごとに変換するための関数。
 
         params:
         vertex_tex: SMPLモデルの各点ごとのtextureを格納。
-        atlas_hash: atlas textureのhash、vertex番号に対応するパーツIDとUV位置が格納されている。
         parts_num: パーツの番号。1~24。
-        size: atlas展開するときの各パーツのwidth、heightの値。ただし、width=height。
         """
         tex = np.zeros((self.atlas_size, self.atlas_size, 3))
         tex_ex = np.zeros((self.atlas_size, self.atlas_size))
@@ -123,31 +112,36 @@ class Normal2Atlas(UVConverter):
         for k, v in self.atlas_hash.items():
             for t in v:
                 if t[0]==parts_num:
-                    tex[int(t[1]*(self.atlas_size-1)), (self.atlas_size-1)-int(t[2]*(self.atlas_size-1)), :]=vertex_tex[k]
-                    tex_ex[int(t[1]*(self.atlas_size-1)), (self.atlas_size-1)-int(t[2]*(self.atlas_size-1))] = 1
+                    tex[int(t[1]*(self.atlas_size-1)), (self.atlas_size-1)-int(t[2]*(self.atlas_size-1)), :] = vertex_tex[k]
+                    if not vertex_mask is None:
+                        tex_ex[int(t[1]*(self.atlas_size-1)), (self.atlas_size-1)-int(t[2]*(self.atlas_size-1))] = vertex_mask[k]
+                    else:
+                        tex_ex[int(t[1]*(self.atlas_size-1)), (self.atlas_size-1)-int(t[2]*(self.atlas_size-1))] = 1
 
         return tex/255, tex_ex
 
-    def _mapping_normal_to_atlas(self, normal_tex):
+    def _mapping_normal_to_atlas(self, normal_tex, mask):
         """
         normal textureをatlas textureに変換するための関数。
 
         params:
         normal_tex: 変換前のnormal texture。
-        normal_hash: normal textureのhash、vertex番号に対応するUV位置が格納されている。
-        atlas_hash: atlas textureのhash、vertex番号に対応するパーツIDとUV位置が格納されている。
-        size: atlas展開するときの各パーツのwidth、heightの値。ただし、width=height。
         """
         vertex_tex = {}
+        vertex_mask = None
+        if not mask is None:
+            vertex_mask = {}
         h, w, _ = normal_tex.shape
 
         for k,v in self.normal_hash.items():
             # 1つのvertexに対して複数候補がある可能性はあるが、textureは同じとみなして最初の候補を使う。
             vertex_tex[k] = normal_tex[int(h-v[0][1]*(h-1)), int(v[0][0]*(w-1)), :]
+            if not vertex_mask is None:
+                vertex_mask[k] = mask[int(h-v[0][1]*(h-1)), int(v[0][0]*(w-1))]
 
         atlas_texture = np.zeros((24, self.atlas_size, self.atlas_size, 3))
         atlas_ex = np.zeros((24, self.atlas_size, self.atlas_size))
         for i in range(24):
-            atlas_texture[i], atlas_ex[i] = self._mapping_to_each_atlas_parts(vertex_tex, parts_num=i+1)
+            atlas_texture[i], atlas_ex[i] = self._mapping_to_each_atlas_parts(vertex_tex, vertex_mask, parts_num=i+1)
 
         return atlas_texture, atlas_ex

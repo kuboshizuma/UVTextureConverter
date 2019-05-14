@@ -20,8 +20,8 @@ class Atlas2Normal(UVConverter):
         else:
             self.mapping_relation = []
 
-    def convert(self, atlas_tex, return_exist_area=False):
-        if self.normal_tex is None or self.normal_ex is None: self._mapping(atlas_tex)
+    def convert(self, atlas_tex, mask=None):
+        if self.normal_tex is None or self.normal_ex is None: self._mapping(atlas_tex, mask)
         if len(self.mapping_relation)==0:
             for k in tqdm(range(self.FacesDensePose.shape[0])):
                 face = self.FacesDensePose[k] # 3点からなるfaceの1つの組み合わせ
@@ -67,26 +67,30 @@ class Atlas2Normal(UVConverter):
                                 if len(a_vertex)== 0 or len(b_vertex)== 0 or len(c_vertex)== 0: continue
                                 atlas_tex_pos = a*np.array(a_vertex) + b*np.array(b_vertex) + c*np.array(c_vertex)
                                 self.mapping_relation.append([(self.normal_size-1)-j, i, face_id-1, int(atlas_tex_pos[0]*self.atlas_size), (self.atlas_size-1)-int(atlas_tex_pos[1]*self.atlas_size)])
+
             with open(self.file_path / f'mapping_relations/atlas2normal_{self.atlas_size}_{self.normal_size}.pickle', mode='wb') as f:
                 pickle.dump(self.mapping_relation, f)
+
+        painted_normal_tex = np.copy(self.normal_tex)
+        painted_normal_ex = np.copy(self.normal_ex)
         for relation in self.mapping_relation:
             new_tex = atlas_tex[relation[2], relation[3], relation[4]]
-            self.normal_tex[relation[0], relation[1]] = new_tex/255
-            self.normal_ex[relation[0], relation[1]] = 1
+            painted_normal_tex[relation[0], relation[1]] = new_tex/255
+            painted_normal_ex[relation[0], relation[1]] = mask[relation[2], relation[3], relation[4]]
 
+        if not mask is None:
+            return painted_normal_tex, painted_normal_ex
+        else:
+            return painted_normal_tex
+
+    def _mapping(self, atlas_tex, mask, return_exist_area=False):
+        self.normal_tex, self.normal_ex  = self._mapping_atlas_to_normal(atlas_tex, mask)
         if return_exist_area:
             return self.normal_tex, self.normal_ex
         else:
             return self.normal_tex
 
-    def _mapping(self, atlas_tex, return_exist_area=False):
-        self.normal_tex, self.normal_ex  = self._mapping_atlas_to_normal(atlas_tex)
-        if return_exist_area:
-            return self.normal_tex, self.normal_ex
-        else:
-            return self.normal_tex
-
-    def _mapping_atlas_to_normal(self, atlas_tex):
+    def _mapping_atlas_to_normal(self, atlas_tex, mask):
         """
         atlas textureをnormal textureに変換するための関数。
 
@@ -94,19 +98,23 @@ class Atlas2Normal(UVConverter):
         atlas_tex: 変換前のatlas texture。
         """
         vertex_tex = {}
+        vertex_mask = {}
         _, h, w, _ = atlas_tex.shape
 
         for k,v in self.atlas_hash.items():
             # 1つのvertexに対して複数候補がある可能性はあるが、textureは同じとみなして最初の候補を使う。
             vertex_tex[k] = atlas_tex[v[0][0]-1, int(v[0][1]*(h-1)), (w-1)-int(v[0][2]*(w-1))]
+            vertex_mask[k] = mask[v[0][0]-1, int(v[0][1]*(h-1)), (w-1)-int(v[0][2]*(w-1))]
 
         normal_tex = np.zeros((self.normal_size, self.normal_size, 3))
         normal_tex_exist = np.zeros((self.normal_size, self.normal_size))
 
         for k, v in self.normal_hash.items():
             for t in v:
-                normal_tex[(self.normal_size-1)-int(t[1]*(self.normal_size-1)),int(t[0]*(self.normal_size-1)),  :]=vertex_tex[k]
-                normal_tex_exist[(self.normal_size-1)-int(t[1]*(self.normal_size-1)),int(t[0]*(self.normal_size-1))] = 1
+                normal_tex[(self.normal_size-1)-int(t[1]*(self.normal_size-1)),int(t[0]*(self.normal_size-1)), :] = vertex_tex[k]
+                if not mask is None:
+                    normal_tex_exist[(self.normal_size-1)-int(t[1]*(self.normal_size-1)),int(t[0]*(self.normal_size-1))] = vertex_mask[k]
+                else:
+                    normal_tex_exist[(self.normal_size-1)-int(t[1]*(self.normal_size-1)),int(t[0]*(self.normal_size-1))] = 1
 
         return normal_tex/255, normal_tex_exist
-

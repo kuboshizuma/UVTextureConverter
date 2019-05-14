@@ -95,3 +95,16 @@ class UVConverter(object):
         t = np.sqrt((uCrossW**2).sum())/denom
 
         return(1-(r+t),r,t)
+
+    @classmethod
+    def concat_atlas_tex(cls, given_tex):
+        tex = None
+        for i in range(0, 4):
+            tex_tmp = given_tex[6*i]
+            for i in range(1+6*i, 6+6*i):
+                tex_tmp = np.concatenate((tex_tmp, given_tex[i]), axis=1)
+            if tex is None:
+                tex = tex_tmp
+            else:
+                tex = np.concatenate((tex, tex_tmp), axis=0)
+        return tex
