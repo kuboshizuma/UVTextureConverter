@@ -19,12 +19,8 @@ class Normal2Atlas(UVConverter):
         else:
             self.mapping_relation = []
 
-    def mapping(self, normal_tex):
-        self.atlas_tex, self.atlas_ex= self._mapping_normal_to_atlas(normal_tex)
-        return self.atlas_tex, self.atlas_ex
-
-    def convert(self, normal_tex):
-        if self.atlas_tex is None or self.atlas_ex is None: self.mapping(normal_tex)
+    def convert(self, normal_tex, return_exist_area=False):
+        if self.atlas_tex is None or self.atlas_ex is None: self._mapping(normal_tex)
         if len(self.mapping_relation)==0:
             for k in tqdm(range(len(self.normal_faces))):
                 face_vertex = self.normal_faces[k] # vertex番号を取得
@@ -84,8 +80,12 @@ class Normal2Atlas(UVConverter):
         for relation in self.mapping_relation:
             new_tex = normal_tex[relation[3], relation[4]]
             self.atlas_tex[relation[2], relation[0], relation[1]] = new_tex/255
+            self.atlas_ex[relation[2], relation[0], relation[1]] = 1
 
-        return self.atlas_tex
+        if return_exist_area:
+            return self.atlas_tex, self.atlas_ex
+        else:
+            return self.atlas_tex
 
     def concat_atlas_tex(self):
         tex = None
@@ -98,6 +98,13 @@ class Normal2Atlas(UVConverter):
             else:
                 tex = np.concatenate((tex, tex_tmp), axis=0)
         return tex
+
+    def _mapping(self, normal_tex, return_exist_area=False):
+        self.atlas_tex, self.atlas_ex= self._mapping_normal_to_atlas(normal_tex)
+        if return_exist_area:
+            return self.atlas_tex, self.atlas_ex
+        else:
+            return self.atlas_tex
 
     def _mapping_to_each_atlas_parts(self, vertex_tex, parts_num):
         """

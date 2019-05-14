@@ -20,12 +20,8 @@ class Atlas2Normal(UVConverter):
         else:
             self.mapping_relation = []
 
-    def mapping(self, atlas_tex):
-        self.normal_tex, self.normal_ex  = self._mapping_atlas_to_normal(atlas_tex)
-        return self.normal_tex, self.normal_ex
-
-    def convert(self, atlas_tex):
-        if self.normal_tex is None or self.normal_ex is None: self.mapping(atlas_tex)
+    def convert(self, atlas_tex, return_exist_area=False):
+        if self.normal_tex is None or self.normal_ex is None: self._mapping(atlas_tex)
         if len(self.mapping_relation)==0:
             for k in tqdm(range(self.FacesDensePose.shape[0])):
                 face = self.FacesDensePose[k] # 3点からなるfaceの1つの組み合わせ
@@ -43,8 +39,8 @@ class Atlas2Normal(UVConverter):
                                 min_val = total
                                 min_index = [a,b,c]
                 normal_a = self.normal_hash[face_vertex[0]][min_index[0]] # vertexのnormal UVでの位置を取得
-                normal_b = self.normal_hash[face_vertex[1]][min_index[1]] 
-                normal_c = self.normal_hash[face_vertex[2]][min_index[2]] 
+                normal_b = self.normal_hash[face_vertex[1]][min_index[1]]
+                normal_c = self.normal_hash[face_vertex[2]][min_index[2]]
                 i_min = int(min([normal_a[0], normal_b[0], normal_c[0]])*self.normal_size)
                 i_max = int(max([normal_a[0], normal_b[0], normal_c[0]])*self.normal_size)
                 j_min = int(min([normal_a[1], normal_b[1], normal_c[1]])*self.normal_size)
@@ -76,8 +72,19 @@ class Atlas2Normal(UVConverter):
         for relation in self.mapping_relation:
             new_tex = atlas_tex[relation[2], relation[3], relation[4]]
             self.normal_tex[relation[0], relation[1]] = new_tex/255
+            self.normal_ex[relation[0], relation[1]] = 1
 
-        return self.normal_tex
+        if return_exist_area:
+            return self.normal_tex, self.normal_ex
+        else:
+            return self.normal_tex
+
+    def _mapping(self, atlas_tex, return_exist_area=False):
+        self.normal_tex, self.normal_ex  = self._mapping_atlas_to_normal(atlas_tex)
+        if return_exist_area:
+            return self.normal_tex, self.normal_ex
+        else
+            return self.normal_tex
 
     def _mapping_atlas_to_normal(self, atlas_tex):
         """
@@ -85,9 +92,6 @@ class Atlas2Normal(UVConverter):
 
         params:
         atlas_tex: 変換前のatlas texture。
-        normal_hash: normal textureのhash、vertex番号に対応するUV位置が格納されている。
-        atlas_hash: atlas textureのhash、vertex番号に対応するパーツIDとUV位置が格納されている。
-        size: atlas展開するときの各パーツのwidth、heightの値。ただし、width=height。
         """
         vertex_tex = {}
         _, h, w, _ = atlas_tex.shape
