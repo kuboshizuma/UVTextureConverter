@@ -21,7 +21,7 @@ class Atlas2Normal(UVConverter):
             self.mapping_relation = []
 
     def convert(self, atlas_tex, mask=None):
-        if self.normal_tex is None or self.normal_ex is None: self._mapping(atlas_tex, mask)
+        self._mapping(atlas_tex, mask)
         if len(self.mapping_relation)==0:
             for k in tqdm(range(self.FacesDensePose.shape[0])):
                 face = self.FacesDensePose[k] # 3点からなるfaceの1つの組み合わせ

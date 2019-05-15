@@ -20,7 +20,7 @@ class Normal2Atlas(UVConverter):
             self.mapping_relation = []
 
     def convert(self, normal_tex, mask=None):
-        if self.atlas_tex is None or self.atlas_ex is None: self._mapping(normal_tex, mask)
+        self._mapping(normal_tex, mask)
         if len(self.mapping_relation)==0:
             for k in tqdm(range(len(self.normal_faces))):
                 face_vertex = self.normal_faces[k] # vertex番号を取得
