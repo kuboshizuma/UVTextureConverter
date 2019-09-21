@@ -1,0 +1,13 @@
+version: "2.3"
+services:
+  algorithm_module:
+    build:
+      context: .
+    image: uvtexture-dev
+    command: /bin/bash
+    volumes:
+      - .:/root/UVTextureConverter
+      - /datadrive:/root/datadrive
+      - UVTextureConverter.egg-info:/root/UVTextureConverter/UVTextureConverter.egg-info
+volumes:
+  UVTextureConverter.egg-info:

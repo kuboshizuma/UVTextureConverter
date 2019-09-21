@@ -6,6 +6,9 @@ verify_ssl = true
 [dev-packages]
 jupyter = "*"
 jupyterlab = "*"
+pillow = "*"
+matplotlib = "*"
+uvtextureconverter = {editable = true,path = "."}
 
 [packages]
 
