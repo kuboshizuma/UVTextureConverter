@@ -1,6 +1,6 @@
 version: "2.3"
 services:
-  algorithm_module:
+  uvtexture_module:
     build:
       context: .
     image: uvtexture-dev
