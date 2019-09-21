@@ -76,7 +76,8 @@ class Atlas2Normal(UVConverter):
         for relation in self.mapping_relation:
             new_tex = atlas_tex[relation[2], relation[3], relation[4]]
             painted_normal_tex[relation[0], relation[1]] = new_tex/255
-            painted_normal_ex[relation[0], relation[1]] = mask[relation[2], relation[3], relation[4]]
+            if not mask is None:
+                painted_normal_ex[relation[0], relation[1]] = mask[relation[2], relation[3], relation[4]]
 
         if not mask is None:
             return painted_normal_tex, painted_normal_ex
@@ -104,7 +105,8 @@ class Atlas2Normal(UVConverter):
         for k,v in self.atlas_hash.items():
             # 1つのvertexに対して複数候補がある可能性はあるが、textureは同じとみなして最初の候補を使う。
             vertex_tex[k] = atlas_tex[v[0][0]-1, int(v[0][1]*(h-1)), (w-1)-int(v[0][2]*(w-1))]
-            vertex_mask[k] = mask[v[0][0]-1, int(v[0][1]*(h-1)), (w-1)-int(v[0][2]*(w-1))]
+            if not mask is None:
+                vertex_mask[k] = mask[v[0][0]-1, int(v[0][1]*(h-1)), (w-1)-int(v[0][2]*(w-1))]
 
         normal_tex = np.zeros((self.normal_size, self.normal_size, 3))
         normal_tex_exist = np.zeros((self.normal_size, self.normal_size))

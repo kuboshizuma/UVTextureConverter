@@ -83,7 +83,8 @@ class Normal2Atlas(UVConverter):
         for relation in self.mapping_relation:
             new_tex = normal_tex[relation[3], relation[4]]
             painted_atlas_tex[relation[2], relation[0], relation[1]] = new_tex/255
-            painted_atlas_ex[relation[2], relation[0], relation[1]] = mask[relation[3], relation[4]]
+            if not mask is None:
+                painted_atlas_ex[relation[2], relation[0], relation[1]] = mask[relation[3], relation[4]]
 
 
         if not mask is None:
