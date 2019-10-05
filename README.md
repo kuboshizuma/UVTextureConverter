@@ -3,7 +3,7 @@
 ## 1. Install
 
 ```
-$ pip install -U git+ssh://git@github.com/kuboshizuma/UVTextureConverter.git@master#egg=UVTextureConverter
+$ pip install UVTextureConverter
 ```
 
 ## 2. How To Use
