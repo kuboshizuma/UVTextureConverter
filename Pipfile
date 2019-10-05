@@ -4,10 +4,15 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+autopep8 = "*"
+flake8 = "*"
+flake8-isort = "*"
+flake8-quotes = "*"
 jupyter = "*"
 jupyterlab = "*"
-pillow = "*"
 matplotlib = "*"
+pep8-naming = "*"
+pillow = "*"
 uvtextureconverter = {editable = true,path = "."}
 
 [packages]

@@ -1,16 +1,17 @@
 # blenderを使ってnormal_facesを取得する。
 
-import bpy
-import bmesh
-from mathutils import Vector
 import pickle
+
+import bmesh
+import bpy
+
 obj = bpy.context.edit_object
 me = obj.data
 bm = bmesh.from_edit_mesh(me)
 
 faces = []
 for f in bm.faces:
-    face =[]
+    face = []
     for v in f.verts:
         face.append(v.index)
     faces.append(face)

@@ -1,12 +1,15 @@
 # blenderを使ってnormal_hashを用意する。 / vertexに対するuvを算出しdumpする。
 
-import bpy
-import bmesh
-from mathutils import Vector
 import pickle
+
+import bmesh
+import bpy
+
 obj = bpy.context.edit_object
 me = obj.data
 bm = bmesh.from_edit_mesh(me)
+
+
 def uv_from_vert_list(uv_layer, v):
     uvs = []
     for l in v.link_loops:
@@ -14,9 +17,11 @@ def uv_from_vert_list(uv_layer, v):
         uvs.append(uv_data.uv)
     return uvs
 
+
 def get_unique_list(seq):
     seen = []
     return [x for x in seq if x not in seen and not seen.append(x)]
+
 
 # Example using the functions above
 uv_layer = bm.loops.layers.uv.active
@@ -25,7 +30,7 @@ output_hash = {}
 count = 0
 for v in bm.verts:
     uvs = uv_from_vert_list(uv_layer, v)
-    print("Vertex: %r" % v.index)
+    print('Vertex: %r' % v.index)
     uv_points = []
     for uv in uvs:
         uv_points.append(list(uv))
