@@ -12,9 +12,7 @@ $ pip install UVTextureConverter
 
 #### nomal texture -> atlas texture
 
-```
-$ python
->>
+```python
 from UVTextureConverter import Normal2Atlas
 from PIL import Image
 import numpy as np
@@ -26,9 +24,7 @@ atlas_tex = converter.convert(normal_tex)
 
 #### atlas texture -> normal texture
 
-```
-$ python
->>
+```python
 from UVTextureConverter import Atlas2Normal
 from PIL import Image
 import numpy as np
