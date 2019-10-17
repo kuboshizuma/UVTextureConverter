@@ -3,6 +3,7 @@ from pathlib import Path
 
 import numpy as np
 from scipy.io import loadmat
+from PIL import Image
 
 
 class UVConverter(object):
@@ -117,3 +118,71 @@ class UVConverter(object):
             else:
                 tex = np.concatenate((tex, tex_tmp), axis=0)
         return tex
+
+    @classmethod
+    def split_atlas_tex(cls, given_tex):
+        h, w, _ = given_tex.shape
+        assert int(h/4) == int(w/6), 'expected aspect ratio ... height:width = 4:6'
+        size = int(h/4)
+        atlas_tex  = np.zeros([24,size,size,3])
+        for i in range(4):
+            for j in range(6):
+                atlas_tex[(6*i+j) , :,:,:] = given_tex[(size*i):(size*i+size),(size*j):(size*j+size),: ]
+        return atlas_tex
+
+    @classmethod
+    def create_smpl_from_images(cls, im, iuv, img_size=200):
+        I_id, U_id, V_id = 2, 1, 0
+        parts_list = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        parts_num = len(parts_list)
+
+        ### generate parts ###
+        im = Image.open(im)
+        iuv = Image.open(iuv)
+
+        im = (np.array(im) / 255).transpose(2,1,0)
+        iuv = (np.array(iuv)).transpose(2,1,0)
+
+        texture = np.zeros((parts_num, 3, img_size, img_size))
+        mask = np.zeros((parts_num, img_size, img_size))
+        for j, parts_id in enumerate(parts_list):
+            im_gen = np.zeros((3, img_size, img_size))
+            im_gen[0][(iuv[V_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int), (iuv[U_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int)] = im[0][iuv[I_id] == parts_id]
+            im_gen[1][(iuv[V_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int), (iuv[U_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int)] = im[1][iuv[I_id] == parts_id]
+            im_gen[2][(iuv[V_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int), (iuv[U_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int)] = im[2][iuv[I_id] == parts_id]
+            texture[j] = im_gen[:,::-1, :]
+
+            mask[j][(iuv[V_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int), (iuv[U_id][iuv[I_id] == parts_id] / 255 * (img_size-1)).astype(int)] =  1
+            mask[j] = mask[j][::-1, :]
+
+        return texture, mask
+
+    @classmethod
+    def create_texture(cls, im, iuv, parts_size=200, concat=True):
+        tex, mask = cls.create_smpl_from_images(im, iuv, img_size=parts_size)
+        tex_trans = np.zeros((24, parts_size, parts_size, 3))
+        mask_trans = np.zeros((24, parts_size, parts_size))
+        for i in range(tex.shape[0]):
+            tex_trans[i] = tex[i].transpose(2, 1, 0)
+            mask_trans[i] = mask[i].transpose(1, 0)
+        if concat:
+            return cls.concat_atlas_tex(tex_trans), cls.concat_atlas_tex(mask_trans)
+        else:
+            return tex_trans, mask_trans
+
+    @classmethod
+    def create_texture_from_video(cls, im_list, iuv_list, parts_size=200, concat=True):
+        tex_sum = np.zeros((24, parts_size, parts_size, 3))
+        mask_sum = np.zeros((24, parts_size, parts_size))
+        for i in range(len(im_list)):
+            tex, mask = UVConverter.create_texture(im_list[i], iuv_list[i], parts_size=parts_size, concat=False)
+            tex_sum += tex
+            mask_sum += mask
+
+        mask = mask_sum + ((mask_sum) == 0)
+        tex_res = tex_sum / mask[:, :, :, np.newaxis]
+        mask_res = np.where(mask_sum!=0, 1, 0)
+        if concat:
+            return cls.concat_atlas_tex(tex_res), cls.concat_atlas_tex(mask_res)
+        else:
+            return tex_res, mask_res
