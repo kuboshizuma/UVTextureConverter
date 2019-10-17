@@ -13,7 +13,9 @@ jupyterlab = "*"
 matplotlib = "*"
 pep8-naming = "*"
 pillow = "*"
+twine = "*"
 uvtextureconverter = {editable = true,path = "."}
+wheel = "*"
 
 [packages]
 

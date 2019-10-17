@@ -1,5 +1,6 @@
 __pycache__
 .ipynb_checkpoints
+.pypirc
 UVTextureConverter.egg-info
 dist
 build
