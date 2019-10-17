@@ -10,8 +10,6 @@ $ pip install UVTextureConverter
 
 ### 2.1. Quick Use
 
-You can check details in notebooks (2.2).
-
 #### nomal texture -> atlas texture
 
 ```
@@ -23,7 +21,7 @@ import numpy as np
 
 normal_tex = np.array(Image.open('input/normal.jpg'))
 converter = Normal2Atlas(normal_size=512, atlas_size=200)
-atlas_texture = converter.convert(normal_tex)
+atlas_tex = converter.convert(normal_tex)
 ```
 
 #### atlas texture -> normal texture
@@ -36,21 +34,18 @@ from PIL import Image
 import numpy as np
 
 im = np.array(Image.open('input/atlas.png').convert('RGB')).transpose(1, 0, 2)
-size = 200
-atlas_tex  = np.zeros([24,size,size,3])
-for i in range(4):
-    for j in range(6):
-        atlas_tex[(6*i+j) , :,:,:] = im[(size*i):(size*i+size),(size*j):(size*j+size),: ]
+atlas_tex_stack = Atlas2Normal.split_atlas_tex(im)
 converter = Atlas2Normal(atlas_size=200, normal_size=512)
-normal_tex = converter.convert(atlas_tex)
+normal_tex = converter.convert(atlas_tex_stack)
 ```
 
-### 2.2. Notebooks
+### 2.2. Notebooks (for details and examples)
 
-See the following notebooks.
+See the following notebooks for details and examples.
 
-- [convert_demo.ipynb](https://github.com/kuboshizuma/UVTextureConverter/blob/master/notebook/convert_demo.ipynb): how to convert from atlas texture to normal texture, and vice versa.
-- [densepose_convert_demo.ipynb](https://github.com/kuboshizuma/UVTextureConverter/blob/master/notebook/densepose_convert_demo.ipynb): how to convert a single rgb image to atlas texute by densepose and convert to atlas texture.
+- [convert_texture_between_normal_and_altas.ipynb](notebook/convert_texture_between_normal_and_altas.ipynb): how to convert from atlas texture to normal texture, and vice versa.
+- [create_uv_texture_from_image_by_using_densepose.ipynb](notebook/create_uv_texture_from_image_by_using_densepose.ipynb): how to convert a single rgb image to atlas texute by densepose and convert to normal texture.
+- [create_uv_texture_from_video_by_using_densepose.ipynb](notebook/create_uv_texture_from_video_by_using_densepose.ipynb): how to convert video to atlas texture.
 
 ## 3. developers install
 
