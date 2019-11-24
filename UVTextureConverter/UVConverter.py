@@ -137,8 +137,17 @@ class UVConverter(object):
         parts_num = len(parts_list)
 
         # generate parts
-        im = Image.open(im)
-        iuv = Image.open(iuv)
+        if isinstance(im, str) and isinstance(iuv, str):
+            im = Image.open(im)
+            iuv = Image.open(iuv)
+        elif isinstance(im, Image) and isinstance(iuv, Image):
+            im = im
+            iuv = iuv
+        elif isinstance(im, np.ndarray) and isinstance(iuv, np.ndarray):
+            im = Image.fromarray(np.uint8(im * 255))
+            iuv = Image.fromarray(np.uint8(iuv * 255))
+        else:
+            raise ValueError('im and iuv must be str or PIL.Image or np.ndarray.')
 
         im = (np.array(im) / 255).transpose(2, 1, 0)
         iuv = (np.array(iuv)).transpose(2, 1, 0)
