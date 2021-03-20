@@ -5,6 +5,7 @@ description = "To convert atlas texuture (defined in Densepose) to normal textur
 authors = ["Shizuma Kubo"]
 repository = "https://github.com/kuboshizuma/UVTextureConverter"
 packages = [{ include = "UVTextureConverter" }]
+license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.6"
