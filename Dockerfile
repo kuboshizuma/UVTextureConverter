@@ -1,4 +1,4 @@
-FROM acesdev/python:3.8.7-cuda11.0-cudnn8-devel-ubuntu18.04
+FROM acesdev/algo-base:awscli2.1.25-poetry1.1.4-tensorrt7.2.2-python3.8.7-cuda11.0-cudnn8-devel-ubuntu18.04
 
 ARG POETRY_VERSION=1.1.4
 RUN POETRY_VERSION=${POETRY_VERSION} curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -

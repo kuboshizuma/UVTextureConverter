@@ -1,13 +1,11 @@
-name: Test
+name: Test@master
 on:
   workflow_dispatch:
     branches:
       - '**'
   push:
     branches:
-      - '**'
-      - '!master'
-      - '!develop'
+      - 'master'
 
 jobs:
   test:
