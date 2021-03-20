@@ -1,5 +1,12 @@
 # UVTextureConverter
 
+This library is converter to convert atlas texuture (defined in Densepose) to normal texture (defined in SMPL), and vice versa.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://badge.fury.io/py/UVTextureConverter.svg)](https://badge.fury.io/py/UVTextureConverter)
+[![Downloads](https://pepy.tech/badge/UVTextureConverter)](https://pepy.tech/project/UVTextureConverter)
+[![Test@master](https://github.com/kuboshizuma/UVTextureConverter/actions/workflows/test_master.yml/badge.svg?branch=master)](https://github.com/kuboshizuma/UVTextureConverter/actions/workflows/test_master.yml)
+
 ## 1. Install
 
 ```
