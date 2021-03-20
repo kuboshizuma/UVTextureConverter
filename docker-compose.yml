@@ -1,13 +1,9 @@
 version: "2.3"
 services:
-  uvtexture_module:
+  uvtex:
     build:
       context: .
-    image: uvtexture-dev
+    image: uvtex-dev
     command: /bin/bash
     volumes:
-      - .:/root/UVTextureConverter
-      - /datadrive:/root/datadrive
-      - UVTextureConverter.egg-info:/root/UVTextureConverter/UVTextureConverter.egg-info
-volumes:
-  UVTextureConverter.egg-info:
+      - .:/root/workspace

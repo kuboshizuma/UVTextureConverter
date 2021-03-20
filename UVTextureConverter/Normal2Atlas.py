@@ -128,11 +128,11 @@ class Normal2Atlas(UVConverter):
         for k, v in self.atlas_hash.items():
             for t in v:
                 if t[0] == parts_num:
-                    tex[int(t[1] * (self.atlas_size - 1)), (self.atlas_size - 1) -
-                        int(t[2] * (self.atlas_size - 1)), :] = vertex_tex[k]
+                    tex[int(t[1] * (self.atlas_size - 1)),
+                        (self.atlas_size - 1) - int(t[2] * (self.atlas_size - 1)), :] = vertex_tex[k]
                     if vertex_mask is not None:
-                        tex_ex[int(t[1] * (self.atlas_size - 1)), (self.atlas_size - 1) -
-                               int(t[2] * (self.atlas_size - 1))] = vertex_mask[k]
+                        tex_ex[int(t[1] * (self.atlas_size - 1)),
+                               (self.atlas_size - 1) - int(t[2] * (self.atlas_size - 1))] = vertex_mask[k]
                     else:
                         tex_ex[int(t[1] * (self.atlas_size - 1)),
                                (self.atlas_size - 1) - int(t[2] * (self.atlas_size - 1))] = 1

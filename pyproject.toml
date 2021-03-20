@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "UVTextureConverter"
+version = "1.2.0"
+description = "To convert atlas texuture (defined in Densepose) to normal texture (defined in SMPL), and vice versa."
+authors = ["Shizuma Kubo"]
+repository = "https://github.com/kuboshizuma/UVTextureConverter"
+packages = [{ include = "UVTextureConverter" }]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+numpy = "*"
+scipy = "*"
+tqdm = "*"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "*"
+flake8 = "*"
+flake8-commas = "*"
+flake8-isort = "*"
+flake8-quotes = "*"
+jupyter = "*"
+jupyterlab = "*"
+matplotlib = "*"
+pep8-naming = "*"
+Pillow = "*"
+wheel = "*"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
