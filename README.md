@@ -49,12 +49,12 @@ See the following notebooks for details and examples.
 
 ```
 $ docker-compose build
-$ docker-compose run --rm uvtexture_module
+$ docker-compose run --rm uvtex
 ```
 
 ### 3.2. notebook usage
 
 ```
-$ docker-compose run --rm -p 8888:8888 uvtexture_module
-$ jupyter notebook --port 8888 --ip=0.0.0.0 --allow-root (in docker)
+$ export UVTEX_PORT=8888
+$ docker-compose run --rm -p $UVTEX_PORT:$UVTEX_PORT uvtex jupyter notebook --port $UVTEX_PORT --ip=0.0.0.0 --allow-root
 ```
