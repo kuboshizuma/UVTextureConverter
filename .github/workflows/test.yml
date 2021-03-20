@@ -1,0 +1,37 @@
+name: Test
+on:
+  workflow_dispatch:
+    branches:
+      - '**'
+  push:
+    branches:
+      - '**'
+      - '!master'
+      - '!develop'
+
+jobs:
+  test:
+    runs-on: ubuntu-18.04
+    container:
+      image: acesdev/python:3.8.7-cuda11.0-cudnn8-devel-ubuntu18.04
+    steps:
+      - name: Install poetry & prepare workdir
+        run: |
+          POETRY_VERSION=1.1.4
+          POETRY_VERSION=${POETRY_VERSION} curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -
+          export PATH=$HOME/.poetry/bin:$PATH
+          export WORKDIR=$HOME/workspace
+          export PYTHONPATH=$WORKDIR
+          cd $WORKDIR
+      - name: Install pip packages
+        run: |
+          pip install --upgrade pip
+          poetry install --no-root
+      - name: Lint with flake8
+        run: |
+          flake8 --version
+          isort --version
+          flake8 --count --show-source --statistics
+      - name: Test
+        run: |
+          python -m unittest`
