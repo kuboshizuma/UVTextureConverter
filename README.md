@@ -58,3 +58,12 @@ $ docker-compose run --rm uvtex
 $ export UVTEX_PORT=8888
 $ docker-compose run --rm -p $UVTEX_PORT:$UVTEX_PORT uvtex jupyter notebook --port $UVTEX_PORT --ip=0.0.0.0 --allow-root
 ```
+
+### 3.3. flake8 & test
+
+```
+$ docker-compose run --rm uvtex
+(in docker)
+$ flake8
+$ python -m unittest
+```

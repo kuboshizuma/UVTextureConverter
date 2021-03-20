@@ -12,8 +12,8 @@ bm = bmesh.from_edit_mesh(me)
 
 def uv_from_vert_list(uv_layer, v):
     uvs = []
-    for l in v.link_loops:
-        uv_data = l[uv_layer]
+    for _l in v.link_loops:
+        uv_data = _l[uv_layer]
         uvs.append(uv_data.uv)
     return uvs
 
