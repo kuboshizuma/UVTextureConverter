@@ -140,7 +140,7 @@ class UVConverter(object):
         if isinstance(im, str) and isinstance(iuv, str):
             im = Image.open(im)
             iuv = Image.open(iuv)
-        elif isinstance(im, type(Image)) and isinstance(iuv, type(Image)):
+        elif isinstance(im, Image.Image) and isinstance(iuv, Image.Image):
             im = im
             iuv = iuv
         elif isinstance(im, np.ndarray) and isinstance(iuv, np.ndarray):
