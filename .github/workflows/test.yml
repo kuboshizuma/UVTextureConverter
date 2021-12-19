@@ -1,13 +1,5 @@
 name: Test
-on:
-  workflow_dispatch:
-    branches:
-      - '**'
-  push:
-    branches:
-      - '**'
-      - '!master'
-      - '!develop'
+on: [pull_request, push, workflow_dispatch]
 
 jobs:
   test:
