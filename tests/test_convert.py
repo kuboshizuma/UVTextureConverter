@@ -37,9 +37,24 @@ class Convert(unittest.TestCase):
         self.assertEqual(atlas_tex_stack.shape, (24, ATLAS_SIZE, ATLAS_SIZE, 3))
         self.assertEqual(normal_texture.shape, (NORMAL_SIZE, NORMAL_SIZE, 3))
 
-    def test_convert_from_iuv_and_image_to_atlas(self):
+    def test_convert_from_iuv_and_image_to_atlas_str(self):
+        self._test_convert_from_iuv_and_image_to_atlas(HUMAN_IMAGE_SAMPLE_PATH, HUMAN_IUV_SAMPLE_PATH)
+
+    def test_convert_from_iuv_and_image_to_atlas_pil(self):
+        self._test_convert_from_iuv_and_image_to_atlas(
+            Image.open(HUMAN_IMAGE_SAMPLE_PATH).convert('RGB'),
+            Image.open(HUMAN_IUV_SAMPLE_PATH).convert('RGB'),
+        )
+
+    def test_convert_from_iuv_and_image_to_atlas_numpy(self):
+        self._test_convert_from_iuv_and_image_to_atlas(
+            np.array(Image.open(HUMAN_IMAGE_SAMPLE_PATH).convert('RGB')) / 255,
+            np.array(Image.open(HUMAN_IUV_SAMPLE_PATH).convert('RGB')) / 255,
+        )
+
+    def _test_convert_from_iuv_and_image_to_atlas(self, image, iuv):
         tex_trans, mask_trans = UVConverter.create_texture(
-            HUMAN_IMAGE_SAMPLE_PATH, HUMAN_IUV_SAMPLE_PATH, parts_size=ATLAS_SIZE, concat=False)
+            image, iuv, parts_size=ATLAS_SIZE, concat=False)
 
         self.assertEqual(tex_trans.shape, (24, ATLAS_SIZE, ATLAS_SIZE, 3))
         self.assertEqual(mask_trans.shape, (24, ATLAS_SIZE, ATLAS_SIZE))
